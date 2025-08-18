@@ -42,11 +42,27 @@ app.use(express.static(FRONTEND_BUILD));
 
 // Admin check middleware
 const checkAdmin = (req, res, next) => {
-  const { email, name } = req.body;
-  if (email === ADMIN_EMAIL && name === ADMIN_NAME) {
-    next();
-  } else {
-    res.status(403).json({ error: 'Access denied' });
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader) {
+    return res.status(401).json({ error: 'No authorization token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Invalid token format' });
+  }
+
+  try {
+    const [email, name] = Buffer.from(token, 'base64').toString().split(':');
+    
+    if (email === process.env.REACT_APP_ADMIN_EMAIL && name === process.env.REACT_APP_ADMIN_NAME) {
+      return next();
+    } else {
+      return res.status(403).json({ error: 'Invalid admin credentials' });
+    }
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid token' });
   }
 };
 
@@ -69,14 +85,18 @@ function writeDB(data) {
 // Admin login endpoint
 app.post('/api/admin/login', (req, res) => {
   const { email, name } = req.body;
-  if (email === ADMIN_EMAIL && name === ADMIN_NAME) {
-    res.json({ success: true });
+  if (email === process.env.REACT_APP_ADMIN_EMAIL && name === process.env.REACT_APP_ADMIN_NAME) {
+    const token = Buffer.from(`${email}:${name}`).toString('base64');
+    res.json({ 
+      success: true, 
+      token: token 
+    });
   } else {
     res.status(401).json({ error: 'Invalid credentials' });
   }
 });
 
-// Protected routes
+// Category routes
 app.post('/api/categories', checkAdmin, (req, res) => {
   const db = readDB();
   const { name, description } = req.body;
@@ -94,6 +114,11 @@ app.post('/api/categories', checkAdmin, (req, res) => {
   res.json(newCategory);
 });
 
+app.get('/api/categories', (req, res) => {
+  const db = readDB();
+  res.json(db.categories);
+});
+
 app.delete('/api/categories/:id', checkAdmin, (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
@@ -102,50 +127,60 @@ app.delete('/api/categories/:id', checkAdmin, (req, res) => {
   res.json({ success: true });
 });
 
+// Product routes
 app.post('/api/products', checkAdmin, upload.array('images', 5), (req, res) => {
   const db = readDB();
-  const { name, price, description, categoryId } = req.body;
-  const images = req.files ? req.files.map(f => `/uploads/${f.filename}`) : [];
+  const { name, price, description, categoryId, categoryName } = req.body;
   
-  const newProduct = { 
-    id: Date.now(), 
-    name, 
-    price: parseFloat(price), 
-    description, 
-    categoryId: parseInt(categoryId), 
-    images 
+  if (!name || !price || !description || !categoryId) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const newProduct = {
+    id: Date.now(),
+    name,
+    price: parseFloat(price),
+    description,
+    categoryId: parseInt(categoryId),
+    categoryName,
+    images: (req.files || []).map(file => `/uploads/${file.filename}`)
   };
-  
+
   db.products.push(newProduct);
   writeDB(db);
   res.json(newProduct);
 });
 
-app.put('/api/products/:id', checkAdmin, upload.array('images', 5), (req, res) => {
+app.get('/api/products', (req, res) => {
+  const db = readDB();
+  res.json(db.products);
+});
+
+app.put('/api/products/:id', checkAdmin, upload.array('images'), (req, res) => {
   const db = readDB();
   const id = parseInt(req.params.id);
-  const index = db.products.findIndex(p => p.id === id);
+  const { name, price, description, categoryId, categoryName } = req.body;
   
-  if (index === -1) {
+  const productIndex = db.products.findIndex(p => p.id === id);
+  if (productIndex === -1) {
     return res.status(404).json({ error: 'Product not found' });
   }
 
-  const { name, price, description, categoryId } = req.body;
-  const newImages = req.files ? req.files.map(f => `/uploads/${f.filename}`) : [];
+  const existingImages = db.products[productIndex].images || [];
+  const newImages = (req.files || []).map(file => `/uploads/${file.filename}`);
   
-  db.products[index] = {
-    ...db.products[index],
-    name,
-    price: parseFloat(price),
-    description,
-    categoryId: parseInt(categoryId),
-    images: newImages.length 
-      ? [...db.products[index].images, ...newImages].slice(0, 5) 
-      : db.products[index].images
+  db.products[productIndex] = {
+    ...db.products[productIndex],
+    name: name || db.products[productIndex].name,
+    price: price ? parseFloat(price) : db.products[productIndex].price,
+    description: description || db.products[productIndex].description,
+    categoryId: categoryId ? parseInt(categoryId) : db.products[productIndex].categoryId,
+    categoryName: categoryName || db.products[productIndex].categoryName,
+    images: [...existingImages, ...newImages].filter(Boolean)
   };
-  
+
   writeDB(db);
-  res.json(db.products[index]);
+  res.json(db.products[productIndex]);
 });
 
 app.delete('/api/products/:id', checkAdmin, (req, res) => {
@@ -156,17 +191,7 @@ app.delete('/api/products/:id', checkAdmin, (req, res) => {
   res.json({ success: true });
 });
 
-// Public routes
-app.get('/api/categories', (req, res) => {
-  const db = readDB();
-  res.json(db.categories);
-});
-
-app.get('/api/products', (req, res) => {
-  const db = readDB();
-  res.json(db.products);
-});
-
+// Users route
 app.get('/api/users', (req, res) => {
   const db = readDB();
   res.json(db.users);

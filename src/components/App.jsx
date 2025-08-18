@@ -27,16 +27,32 @@ function App() {
   const adminEmail = process.env.REACT_APP_ADMIN_EMAIL?.toLowerCase();
   const adminUsername = process.env.REACT_APP_ADMIN_NAME?.toLowerCase();
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('adminToken');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    };
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [prodRes, catRes, userRes] = await Promise.all([
-          fetch(`${API_URL}/api/products`),
-          fetch(`${API_URL}/api/categories`),
-          fetch(`${API_URL}/api/users`)
+          fetch(`${API_URL}/api/products`, { 
+            headers: getAuthHeaders() 
+          }),
+          fetch(`${API_URL}/api/categories`, { 
+            headers: getAuthHeaders() 
+          }),
+          fetch(`${API_URL}/api/users`, { 
+            headers: getAuthHeaders() 
+          })
         ]);
 
-        if (!prodRes.ok || !catRes.ok || !userRes.ok) throw new Error('Error loading data');
+        if (!prodRes.ok || !catRes.ok || !userRes.ok) {
+          throw new Error('Error loading data');
+        }
 
         setProducts(await prodRes.json());
         setCategories(await catRes.json());
@@ -49,24 +65,47 @@ function App() {
     fetchData();
   }, [API_URL]);
 
-  const handleLogin = (email, username) => {
-    const newUser = { email, username, loginTime: new Date().toISOString() };
-    setUsers(prev => [...prev, newUser]);
-    setUserData(newUser);
+  const handleLogin = async (email, username) => {
+    try {
+      const response = await fetch(`${API_URL}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name: username })
+      });
 
-    if (email.toLowerCase() === adminEmail && username.toLowerCase() === adminUsername) {
-      setIsAdmin(true);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // Store the token in localStorage
+      localStorage.setItem('adminToken', data.token);
+      
+      const newUser = { email, username, loginTime: new Date().toISOString() };
+      setUsers(prev => [...prev, newUser]);
+      setUserData(newUser);
+
+      if (email.toLowerCase() === adminEmail && username.toLowerCase() === adminUsername) {
+        setIsAdmin(true);
+      }
+      setIsLoggedIn(true);
+      
+      return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      alert(error.message || 'Login failed');
+      return false;
     }
-    setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('adminToken');
     setIsLoggedIn(false);
     setIsAdmin(false);
     setUserData(null);
   };
 
-  // ===== Category =====
   const addCategory = async (category) => {
     if (!category.name || !category.description) {
       alert('Fill all fields!');
@@ -75,7 +114,7 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/api/categories`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(category)
       });
       if (!res.ok) throw new Error('Error adding category');
@@ -93,7 +132,10 @@ function App() {
 
   const deleteCategory = async (id) => {
     try {
-      const res = await fetch(`${API_URL}/api/categories/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/api/categories/${id}`, { 
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
       if (!res.ok) throw new Error('Error deleting category');
       setCategories(prev => prev.filter(c => c.id !== id));
     } catch (err) {
@@ -102,10 +144,16 @@ function App() {
     }
   };
 
-  
   const addProduct = async (formData) => {
     try {
-      const res = await fetch(`${API_URL}/api/products`, { method: 'POST', body: formData });
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${API_URL}/api/products`, { 
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
       if (!res.ok) throw new Error('Error adding product');
       const newProd = await res.json();
       setProducts(prev => [...prev, newProd]);
@@ -119,7 +167,14 @@ function App() {
 
   const updateProduct = async (id, formData) => {
     try {
-      const res = await fetch(`${API_URL}/api/products/${id}`, { method: 'PUT', body: formData });
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${API_URL}/api/products/${id}`, { 
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
       if (!res.ok) throw new Error('Error updating product');
       const updated = await res.json();
       setProducts(prev => prev.map(p => p.id === id ? updated : p));
@@ -133,7 +188,10 @@ function App() {
 
   const deleteProduct = async (id) => {
     try {
-      const res = await fetch(`${API_URL}/api/products/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/api/products/${id}`, { 
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
       if (!res.ok) throw new Error('Error deleting product');
       setProducts(prev => prev.filter(p => p.id !== id));
     } catch (err) {
