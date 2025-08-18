@@ -1,0 +1,70 @@
+.page {
+  padding: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222; /* темный цвет текста */
+  line-height: 1.6;
+  background-color: #f9f9f9; /* светлый фон */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Заголовок всех страниц */
+.page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #0078d4; /* синий цвет */
+}
+
+/* Параграфы всех страниц */
+.page p {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Можно добавить стили для About */
+.about-page {
+  /* если нужно что-то особенное для About — сюда */
+}
+
+/* Можно добавить стили для Advertising */
+.advertising-page {
+  /* например, другой цвет заголовка */
+  /* color override не обязателен, если хочешь сделать уникальность */
+}
+
+/* Можно добавить стили для Privacy */
+.privacy-page {
+  /* тоже свои стили, если нужно */
+}
+@media (max-width: 768px) {
+  .page {
+    padding: 30px 20px;
+    max-width: 600px;
+  }
+  
+  .page h1 {
+    font-size: 2rem;
+  }
+  
+  .page p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 20px 15px;
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  
+  .page h1 {
+    font-size: 1.6rem;
+  }
+  
+  .page p {
+    font-size: 0.9rem;
+  }
+}

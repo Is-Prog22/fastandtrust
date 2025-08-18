@@ -1,0 +1,364 @@
+.admin-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 2rem 0;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Заголовок */
+.admin-container h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Вкладки */
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e1e5e9;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.admin-tab {
+  padding: 1rem 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  font-size: 1.1rem;
+  border-radius: 10px 10px 0 0;
+}
+
+.admin-tab:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.admin-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* Скрываем все секции кроме активной */
+.admin-section {
+  display: none;
+}
+
+.admin-section.active {
+  display: block;
+}
+
+/* Заголовки секций */
+.admin-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 0.5rem;
+}
+
+/* Поисковая строка */
+.admin-form-input-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 2px solid #e1e5e9;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-form-input-search:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+/* Карточка (товар, категория, пользователь) */
+.admin-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e5e9;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Заголовки в карточке */
+.admin-card h3,
+.admin-card h4 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Параграфы */
+.admin-card p {
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+/* Форма добавления/редактирования */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus,
+.admin-form select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.admin-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Кнопки */
+.admin-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-self: flex-start;
+}
+
+.admin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.admin-btn:active {
+  transform: translateY(0);
+}
+
+/* Кнопка удаления */
+.delete-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+}
+
+.delete-btn:hover {
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+/* Кнопка редактирования */
+.edit-btn {
+  background: linear-gradient(135deg, #feca57, #ff9ff3);
+  color: #333;
+}
+
+.edit-btn:hover {
+  box-shadow: 0 5px 15px rgba(254, 202, 87, 0.4);
+}
+
+/* Контейнер для кнопок действий */
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-actions .admin-btn {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Сетка для карточек */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* Изображения товара (миниатюры) */
+.product-images {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.product-images img {
+  border-radius: 6px;
+  max-width: 60px;
+  height: auto;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.product-images img:hover {
+  transform: scale(1.1);
+}
+
+/* Модальное окно */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.modal-actions .admin-btn {
+  flex: 1;
+}
+
+/* Responsive адаптация */
+@media (max-width: 768px) {
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .admin-tab {
+    border-radius: 10px;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+
+  .admin-tab.active {
+    border-left-color: #667eea;
+    border-bottom-color: transparent;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .modal {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+}
+@media (max-width: 480px) {
+  .admin-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .admin-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .admin-tab {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .admin-actions .admin-btn {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .modal {
+    max-width: 95%;
+    padding: 1rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "products": [
+    {
+      "id": 1755260291098,
+      "name": "fhrhr",
+      "price": 221.99,
+      "description": "ebr",
+      "categoryId": 1755260268694,
+      "images": [
+        "/uploads/1755260291063.png"
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": 1755260268694,
+      "name": "gngng",
+      "description": "gnffnggn"
+    }
+  ],
+  "users": []
+}

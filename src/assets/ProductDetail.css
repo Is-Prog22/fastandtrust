@@ -1,0 +1,371 @@
+.product-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-container {
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-title {
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  color: #333;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 10px;
+}
+
+.product-description {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+/* Стили для модального окна товара */
+.product-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.product-modal {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  max-width: 1000px;
+  width: 95%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.product-modal-left {
+  flex: 1;
+  padding: 25px;
+  background: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-width: 400px;
+}
+
+.product-modal-image {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-modal-image.zoomed {
+  transform: scale(1.8);
+  cursor: zoom-out;
+  z-index: 10;
+}
+
+.modal-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: all 0.2s;
+}
+
+.modal-arrow:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-arrow.left { left: 15px; }
+.modal-arrow.right { right: 15px; }
+
+.product-thumbnails {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 100%;
+  padding: 5px;
+}
+
+.thumbnail {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.thumbnail:hover {
+  border-color: #667eea;
+  transform: scale(1.08);
+}
+
+.thumbnail.active {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px #667eea;
+}
+
+.product-modal-right {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  overflow: hidden;
+}
+
+.product-modal-title {
+  font-size: 26px;
+  margin-bottom: 12px;
+  color: #333;
+  font-weight: 700;
+}
+
+.product-modal-price {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #667eea;
+}
+
+.description-container {
+  max-height: 40vh;
+  overflow-y: auto;
+  margin: 15px 0;
+  padding-right: 10px;
+}
+
+.description-text {
+  white-space: pre-line;
+  word-break: break-word;
+  line-height: 1.5;
+  color: #555;
+}
+
+.description-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.description-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.description-container::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 3px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.back-btn, .add-to-cart-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 16px;
+}
+
+.back-btn {
+  background: #f0f0f0;
+  color: #333;
+  border: none;
+}
+
+.back-btn:hover {
+  background: #e0e0e0;
+}
+
+.add-to-cart-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+}
+
+.add-to-cart-btn:hover {
+  background: #764ba2;
+  transform: translateY(-2px);
+}
+
+/* Адаптация под планшеты */
+@media (max-width: 1024px) {
+  .product-card {
+    flex: 1 1 calc(50% - 20px);
+    margin: 10px;
+  }
+
+  .product-title {
+    font-size: 15px;
+  }
+
+  .product-price {
+    font-size: 17px;
+  }
+
+  .product-description {
+    font-size: 13px;
+  }
+
+  .product-modal-title {
+    font-size: 22px;
+  }
+
+  .product-modal-price {
+    font-size: 20px;
+  }
+}
+
+/* Адаптация под телефоны */
+@media (max-width: 480px) {
+  .product-card {
+    flex: 1 1 100%;
+    margin: 8px 0;
+  }
+
+  .product-image-container {
+    height: 160px;
+  }
+
+  .product-title {
+    font-size: 14px;
+  }
+
+  .product-price {
+    font-size: 16px;
+  }
+
+  .product-description {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+  }
+
+  .product-modal {
+    padding: 10px;
+    flex-direction: column;
+    max-height: 95vh;
+  }
+
+  .product-modal-left,
+  .product-modal-right {
+    min-width: auto;
+    padding: 15px;
+  }
+
+  .product-modal-image {
+    max-height: 250px;
+  }
+
+  .product-modal-title {
+    font-size: 20px;
+  }
+
+  .product-modal-price {
+    font-size: 18px;
+  }
+
+  .back-btn,
+  .add-to-cart-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .modal-arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+  }
+
+  .thumbnail {
+    width: 55px;
+    height: 55px;
+  }
+
+  .description-container {
+    max-height: 30vh;
+  }
+}
+
+.not-found {
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  padding: 50px;
+}
