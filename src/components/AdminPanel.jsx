@@ -27,17 +27,13 @@ const AdminPanel = ({
   });
   const [newProductFiles, setNewProductFiles] = useState([]);
   const [editingProductFiles, setEditingProductFiles] = useState([]);
-
-  // Поиск по товарам
   const [productSearch, setProductSearch] = useState('');
 
-  // Фильтрация товаров по поиску (без учета регистра)
   const filteredProducts = useMemo(() => {
     const lowerSearch = productSearch.toLowerCase();
     return products.filter(p => p.name.toLowerCase().includes(lowerSearch));
   }, [products, productSearch]);
 
-  // Добавление товара с поддержкой до 5 фото
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
@@ -56,15 +52,15 @@ const AdminPanel = ({
       if(!window.confirm('Вы точно хотите добавить товар без фотографий?')) return;
     }
 
-    const formData = new FormData();
-    formData.append('name', newProduct.name);
-    formData.append('price', newProduct.price);
-    formData.append('description', newProduct.description);
-    formData.append('categoryId', newProduct.categoryId);
-    formData.append('categoryName', category.name);
-    newProductFiles.forEach(file => formData.append('images', file));
+    const productData = {
+      name: newProduct.name,
+      price: newProduct.price,
+      description: newProduct.description,
+      categoryId: newProduct.categoryId,
+      categoryName: category.name
+    };
 
-    const success = await onAddProduct(formData);
+    const success = await onAddProduct(productData, newProductFiles);
     if (success) {
       setNewProduct({ name: '', price: '', description: '', categoryId: '', images: [] });
       setNewProductFiles([]);
@@ -72,7 +68,6 @@ const AdminPanel = ({
     }
   };
 
-  // Обновление товара
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
 
@@ -87,21 +82,20 @@ const AdminPanel = ({
       return;
     }
 
-    const formData = new FormData();
-    formData.append('name', editingProduct.name);
-    formData.append('price', editingProduct.price);
-    formData.append('description', editingProduct.description);
-    formData.append('categoryId', editingProduct.categoryId);
-    formData.append('categoryName', category.name);
-    editingProductFiles.forEach(file => formData.append('images', file));
+    const productData = {
+      name: editingProduct.name,
+      price: editingProduct.price,
+      description: editingProduct.description,
+      categoryId: editingProduct.categoryId,
+      categoryName: category.name
+    };
 
-    await onUpdateProduct(editingProduct.id, formData);
+    await onUpdateProduct(editingProduct.id, productData, editingProductFiles);
     setEditingProduct(null);
     setEditingProductFiles([]);
     alert('Товар успешно обновлен!');
   };
 
-  // Добавляем выбранные файлы к уже существующим, максимум 5
   const handleNewProductFilesChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setNewProductFiles(prevFiles => {
@@ -118,7 +112,6 @@ const AdminPanel = ({
     });
   };
 
-  // Добавление категории
   const handleAddCategory = (e) => {
     e.preventDefault();
     if (onAddCategory(newCategory)) {
@@ -152,11 +145,9 @@ const AdminPanel = ({
         </button>
       </div>
 
-      {/* Управление товарами */}
       <div className={`admin-section ${activeTab === 'products' ? 'active' : ''}`}>
         <h2>Управление товарами</h2>
         
-        {/* Поиск товаров */}
         <input
           type="text"
           placeholder="Поиск товаров..."
@@ -166,7 +157,6 @@ const AdminPanel = ({
           style={{marginBottom: '1rem', padding: '0.75rem 1rem', fontSize: '1rem', borderRadius: '10px', border: '2px solid #e1e5e9'}}
         />
 
-        {/* Добавление товара */}
         <div className="admin-card">
           <h3>Добавить товар</h3>
           <form onSubmit={handleAddProduct} className="admin-form">
@@ -212,7 +202,6 @@ const AdminPanel = ({
           </form>
         </div>
 
-        {/* Список товаров с фильтром */}
         <div className="admin-grid">
           {filteredProducts.length === 0 ? (
             <div className="admin-card"><p>Товары не найдены</p></div>
@@ -245,7 +234,6 @@ const AdminPanel = ({
         </div>
       </div>
 
-      {/* Управление категориями */}
       <div className={`admin-section ${activeTab === 'categories' ? 'active' : ''}`}>
         <h2>Управление категориями</h2>
         
@@ -285,7 +273,6 @@ const AdminPanel = ({
         </div>
       </div>
 
-      {/* Пользователи */}
       <div className={`admin-section ${activeTab === 'users' ? 'active' : ''}`}>
         <h2>Зарегистрированные пользователи</h2>
         <div className="admin-grid">
@@ -315,7 +302,6 @@ const AdminPanel = ({
         </div>
       </div>
 
-      {/* Модальное окно редактирования товара */}
       {editingProduct && (
         <div className="modal-overlay">
           <div className="modal">

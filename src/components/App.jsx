@@ -18,7 +18,6 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userData, setUserData] = useState(null);
-
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
@@ -79,9 +78,7 @@ function App() {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Store the token in localStorage
       localStorage.setItem('adminToken', data.token);
-      
       const newUser = { email, username, loginTime: new Date().toISOString() };
       setUsers(prev => [...prev, newUser]);
       setUserData(newUser);
@@ -114,18 +111,24 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/api/categories`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(category)
       });
-      if (!res.ok) throw new Error('Error adding category');
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.error || 'Error adding category');
+      }
 
       const newCat = await res.json();
       setCategories(prev => [...prev, newCat]);
-      alert('Category added!');
       return true;
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      console.error('Error adding category:', err);
+      alert(err.message || 'Failed to add category');
       return false;
     }
   };
@@ -136,52 +139,95 @@ function App() {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
-      if (!res.ok) throw new Error('Error deleting category');
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.error || 'Error deleting category');
+      }
       setCategories(prev => prev.filter(c => c.id !== id));
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      console.error('Error deleting category:', err);
+      alert(err.message || 'Failed to delete category');
     }
   };
 
-  const addProduct = async (formData) => {
+  const addProduct = async (productData, files) => {
     try {
-      const token = localStorage.getItem('adminToken');
+      const formData = new FormData();
+      
+      // Add all product data to formData
+      Object.keys(productData).forEach(key => {
+        if (productData[key] !== undefined) {
+          formData.append(key, productData[key]);
+        }
+      });
+
+      // Add all files to formData
+      if (files && files.length > 0) {
+        files.forEach(file => {
+          formData.append('images', file);
+        });
+      }
+
       const res = await fetch(`${API_URL}/api/products`, { 
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         },
         body: formData
       });
-      if (!res.ok) throw new Error('Error adding product');
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.error || 'Error adding product');
+      }
+
       const newProd = await res.json();
       setProducts(prev => [...prev, newProd]);
       return true;
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      console.error('Error adding product:', err);
+      alert(err.message || 'Failed to add product');
       return false;
     }
   };
 
-  const updateProduct = async (id, formData) => {
+  const updateProduct = async (id, productData, files = []) => {
     try {
-      const token = localStorage.getItem('adminToken');
+      const formData = new FormData();
+      
+      // Add all product data to formData
+      Object.keys(productData).forEach(key => {
+        if (productData[key] !== undefined) {
+          formData.append(key, productData[key]);
+        }
+      });
+
+      // Add new files to formData
+      if (files && files.length > 0) {
+        files.forEach(file => {
+          formData.append('images', file);
+        });
+      }
+
       const res = await fetch(`${API_URL}/api/products/${id}`, { 
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         },
         body: formData
       });
-      if (!res.ok) throw new Error('Error updating product');
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.error || 'Error updating product');
+      }
+
       const updated = await res.json();
-      setProducts(prev => prev.map(p => p.id === id ? updated : p));
+      setProducts(prev => prev.map(p => p.id === parseInt(id) ? updated : p));
       return true;
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      console.error('Error updating product:', err);
+      alert(err.message || 'Failed to update product');
       return false;
     }
   };
@@ -192,11 +238,14 @@ function App() {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
-      if (!res.ok) throw new Error('Error deleting product');
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.error || 'Error deleting product');
+      }
       setProducts(prev => prev.filter(p => p.id !== id));
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      console.error('Error deleting product:', err);
+      alert(err.message || 'Failed to delete product');
     }
   };
 
